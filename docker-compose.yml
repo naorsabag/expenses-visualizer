@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+ backend:
+  container_name: pyhton-server
+  build: ./server
+  image: py-es-server
+  environment:
+   - ES_HOST=db
+   - ES_PORT=9200
+  networks:
+   - esnet
+  depends_on:
+   - db
+
+ db: # Elasticsearch Instance
+  container_name: elasticsearch
+  image: docker.elastic.co/elasticsearch/elasticsearch:6.4.1
+  volumes: # Persist ES data in seperate "esdata" volume
+   - esdata:/usr/share/elasticsearch/data
+  environment:
+   - bootstrap.memory_lock=true
+   - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+   - discovery.type=single-node
+  ports: # Expose Elasticsearch ports
+   - "9200:9200"
+  networks:
+   - esnet
+
+ stats:
+  image: 'docker.elastic.co/kibana/kibana:6.4.1'
+  container_name: kibana
+  environment:
+   ELASTICSEARCH_URL: http://db:9200
+  ports:
+   - '5601:5601'
+  networks:
+   - esnet
+  depends_on:
+   - db
+
+volumes: # Define seperate volume for Elasticsearch data
+ esdata:
+
+networks:
+ esnet:
+  driver: bridge
