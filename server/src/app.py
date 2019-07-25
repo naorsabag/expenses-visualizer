@@ -2,12 +2,20 @@ from elasticsearch import Elasticsearch
 import time
 import os
 import xlrd
+from flask import Flask
 
 ES_PORT = os.environ['ES_PORT']
 ES_HOST = os.environ['ES_HOST']
 ES_INDEX_NAME = "naor_expenses"
 ES_DOC_TYPE = "expense_log"
 SHEET_LOC = "expences.xlsx"
+
+app = Flask(__name__)
+es={}
+
+@app.route('/')
+def index():
+    return 'Hello i\'m at your service'
 
 def sheet_rows_to_dics():
 	print("start-parse")
@@ -45,20 +53,19 @@ def init_es():
 	return es;
 
 
-
 def add_doc_to_index(es, doc):
 	return es.index(index=ES_INDEX_NAME,doc_type=ES_DOC_TYPE,id=None,body=doc)
 
 
 def load_sheet_to_es():
-	es = init_es()
 	for dic in sheet_rows_to_dics():		
 		res = add_doc_to_index(es, dic)
 		print(res)
 
-
 if __name__ == "__main__":
 	print("start")
+	es = init_es()
+	app.run(debug=True, host='0.0.0.0')
 	load_sheet_to_es()
 	print("finish")
 
