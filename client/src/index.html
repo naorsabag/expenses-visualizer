@@ -4,20 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Hello World - Nginx Docker</title>
-    <style>
-        h1{
-            font-weight:lighter;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-    </style>
+    <title>expenses-visualizer</title>
     <script type="text/javascript" src="index.js" async></script>
 </head>
 <body>
-    
-    <h1>
-        Hello World!
-    </h1>
-
+    <form>
+        <select id="categoriesSelectId" onchange ="onCategorySelected()">
+            <option value="" disabled selected>Select category</option>
+            <option value="food">Food</option>
+        </select>
+        <select  id="subCategoriesSelectId" onchange ="onSubCategorySelected()">
+            <option value="" disabled selected>Select sub category</option>
+            <option value="vegetable">vegetable</option>
+        </select>
+        <select  id="itemsSelectId" onchange ="onItemSelected()">
+            <option value="" disabled selected>Select item</option>
+            <option value="appel">appel</option>
+        </select>
+        <input type="number" name="amount" value=0>
+        <input type="date" name="date">
+        <input type="submit" value="add">
+    </form>
+    <br>
+    <form action="" method="" enctype="multipart/form-data">
+        Select excel file to upload:
+        <input type="file" name="fileToUpload" id="fileToUpload">
+        <input type="submit" value="Upload Image" name="submit">
+    </form>
+    <br>
+    <form>
+        <input type="text" name="category-name" value="category name">
+        <input type="submit" value="add category">
+    </form>
+    <br>
+    <form>
+        <input type="text" name="sub-category-name" value="sub category name">
+        <input type="submit" value="add sub category">
+    </form>
 </body>
 </html>

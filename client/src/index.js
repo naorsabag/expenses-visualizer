@@ -1,21 +1,150 @@
 var host = location.host;
-var url = 'http://'+host+'/hello/';
+var host_url = 'http://'+host+'/api';
+var PING_URL = '/hello/';
+var All_CATEGORIES_URL = '/get-all-categories/';
+var All_SUB_CATEGORIES_URL = '/get-all-sub-categories/';
+var ALL_ITEMS_URL = '/get-all-items/';
+var ADD_TRANSACTION_URL ='/add-transaction/';
+var ADD_CATEGORY_URL = '/add_category/';
+var ADD_SUB_CATEGORY_URL = '/add-sub-category/';
+var ADD_ITEM_URL = '/add-item/';
+var ADD_TRANSACTIONS_FROM_SHEET_URL = '/add-transactions-from-sheet/';
+var CATEGORIES_SELECT_ELM_ID = 'categoriesSelectId';
+var SUB_CATEGORIES_SELECT_ELM_ID = 'subCategoriesSelectId';
+var ITEM_SELECT_ELM_ID = 'itemsSelectId';
 
-fetch(url)
-  .then(
-    function(response) {
-      if (response.status !== 200) {
-        console.log('Looks like there was a problem. Status Code: ' +
-          response.status);
-        return;
-      }
+var tid = setInterval( async () => {
+  if ( document.readyState !== 'complete' ) return;
+  clearInterval( tid );       
+  await main();
+}, 100 );
 
-      // Examine the text in the response
-      response.json().then(function(data) {
-        console.log(data);
-      });
-    }
-  )
-  .catch(function(err) {
-    console.log('Fetch Error :-S', err);
+async function main() {
+  ping_backend();
+
+  var categories = await get_categories();
+  show_categories(categories);
+}
+
+function ping_backend() {
+  return fetch_backend(PING_URL).then((data) => {
+    console.log(data);
   });
+}
+
+async function get_categories() {
+  var data = await fetch_backend(All_CATEGORIES_URL); 
+  return data.categories;
+}
+
+function show_categories(categories) {
+  show_data_in_select_element(categories,CATEGORIES_SELECT_ELM_ID);
+}
+
+async function onCategorySelected() {
+  onSelect(CATEGORIES_SELECT_ELM_ID, get_sub_categories, show_sub_categories);
+}
+
+async function get_sub_categories(category) {
+  var data = await fetch_backend('/'+category+All_SUB_CATEGORIES_URL );
+  return data.sub_categories;
+}
+
+function show_sub_categories(subCategories) {
+  show_data_in_select_element(subCategories,SUB_CATEGORIES_SELECT_ELM_ID);
+}
+
+async function onSubCategorySelected() {
+  onSelect(SUB_CATEGORIES_SELECT_ELM_ID, get_items, show_items);
+}
+
+async function get_items(sub_category) {
+  var data = await fetch_backend('/'+sub_category+ALL_ITEMS_URL);
+  return data.items;
+}
+
+function show_items(items) {
+  show_data_in_select_element(items,ITEM_SELECT_ELM_ID);
+}
+
+async function onItemSelected() {
+  onSelect(ITEM_SELECT_ELM_ID, itemName => itemName, add_transaction);
+}
+
+function show_data_in_select_element(data, selectElmId) {
+  var selectElm = document.getElementById(selectElmId);
+
+  data.forEach( item => {
+    var opt = document.createElement('option');
+    opt.value = item;
+    opt.innerHTML = item;
+    selectElm.appendChild(opt);
+  });
+}
+
+async function onSelect(selectElmId, digestSelectedVal , operate) {
+  var selectElm = document.getElementById(selectElmId);
+  var selectedVal = selectElm.value;
+  
+  if(selectedVal == selectElm.options[0].value) {
+    return;
+  }
+
+  var items = await digestSelectedVal(selectedVal);
+  operate(items);
+}
+
+function add_transaction(transaction) {
+  return fetch_backend(ADD_TRANSACTION_URL, {transac: transaction});
+}
+
+function add_item(item) {
+  fetch_backend(ADD_ITEM_URL, item).then(function(data) {
+    console.log(data);
+  });
+}
+
+function add_sub_category(sub_category) {
+  fetch_backend(ADD_SUB_CATEGORY_URL, sub_category).then(function(data) {
+    console.log(data);
+  });
+}
+
+function add_category(category) {
+  fetch_backend(ADD_CATEGORY_URL, category).then(function(data) {
+    console.log(data);
+  });
+}
+
+function upload_sheet(sheet) {
+  fetch_backend(ADD_TRANSACTIONS_FROM_SHEET_URL, sheet).then(function(data) {
+    console.log(data);
+  });
+}
+
+async function fetch_backend(routing, payload) {
+  var options = null;
+
+  if(payload) {
+    var data = new FormData();
+    data.append( "json", JSON.stringify( payload ));
+    options = {
+      method: "POST",
+      body: data
+    }
+  }
+
+  try {
+    var response = await fetch(host_url+routing, options);
+  
+    if (response.status !== 200) {
+      throw('Looks like there was a problem. Status Code: ' +
+      response.status);
+    }
+
+    return resData = await response.json();
+
+  } catch (error) {
+    throw('Fetch Error :-S', error);
+  }
+}

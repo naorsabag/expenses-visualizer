@@ -1,71 +1,54 @@
-from elasticsearch import Elasticsearch 
-import time
+from flask import Flask, jsonify
+from esHandler import ESHandler
+import asyncio
 import os
-import xlrd
-from flask import Flask
+import json
 
 ES_PORT = os.environ['ES_PORT']
 ES_HOST = os.environ['ES_HOST']
-ES_INDEX_NAME = "naor_expenses"
-ES_DOC_TYPE = "expense_log"
+ES_INDEX_NAME = "expenses"
 SHEET_LOC = "expences.xlsx"
 
 app = Flask(__name__)
-es={}
+es = ESHandler(ES_HOST,ES_PORT,ES_INDEX_NAME)
 
-@app.route('/')
+@app.route('/hello/', methods=['GET'])
 def index():
-    return 'Hello i\'m at your service'
-
-def sheet_rows_to_dics():
-	print("start-parse")
-	wb = xlrd.open_workbook(SHEET_LOC)
-	sheet = wb.sheet_by_index(0)
-
-	first_row = sheet.row_values(0)
-
-	for row in range(1,sheet.nrows):
-		dic = {}
-		i = 0;		
-		for col in sheet.row_values(rowx=row):
-			dic[first_row[i]] = col
-			i+=1
- 		
-		yield (dic)
-	print("finish-parse")
+    return jsonify(ping='Hello i\'m at your service')
 
 
-def init_es():
-	print("start-init")
-	es=Elasticsearch([{'host':ES_HOST,'port':ES_PORT}])
-
-	isEsUp = False
-	while not isEsUp:
-		time.sleep(.100)
-		try:
-			isEsUp = es.cluster.health()
-		except:
-			print("##########################################################")
-			print("not yet")
-			print("##########################################################")
-	
-	print("finish-init")
-	return es;
+@app.route('/get-all-categories/', methods=['GET'])
+def get_all_categories():
+    return jsonify(categories = ['category1','category2','category3'])
 
 
-def add_doc_to_index(es, doc):
-	return es.index(index=ES_INDEX_NAME,doc_type=ES_DOC_TYPE,id=None,body=doc)
+@app.route('/<category>/get-all-sub-categories/', methods=['GET'])
+def get_all_sub_categories(category=None):
+    return jsonify(sub_categories = [category+'-sub-category1',category+'-sub-category2',category+'-sub-category3'])
 
 
-def load_sheet_to_es():
-	for dic in sheet_rows_to_dics():		
-		res = add_doc_to_index(es, dic)
-		print(res)
+@app.route('/<subCategory>/get-all-items/', methods=['GET'])
+def get_all_items(subCategory=None):
+    return jsonify(items=[subCategory+'-item1',subCategory+'-item2',subCategory+'-item3'])
+
+
+@app.route('/add-transaction/', methods=['POST'])
+def add_transaction():
+	es.insert_dict(request.form)
+	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+
+
+@app.errorhandler(Exception)
+def all_exception_handler(error):
+   return 'Error', 500
+
+
+async def main():
+	await es.init()
+	es.insert_sheet(SHEET_LOC)
+	app.run(debug=True, host='0.0.0.0')
 
 if __name__ == "__main__":
-	print("start")
-	es = init_es()
-	app.run(debug=True, host='0.0.0.0')
-	load_sheet_to_es()
-	print("finish")
+	print("start server")
+	asyncio.run(main())
 

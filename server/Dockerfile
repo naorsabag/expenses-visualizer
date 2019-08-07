@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.7
 
 WORKDIR /usr/src/app
 
@@ -7,6 +7,4 @@ COPY /expences.xlsx ./
 
 RUN pip install -r requirements.txt
 
-HEALTHCHECK --timeout=2m CMD curl -fsSL "http://loclhost:9200/_cat/health?h=status" | grep -E '^green'
-
-CMD [ "python", "app.py" ]
+CMD [ "python","-u", "app.py" ]
