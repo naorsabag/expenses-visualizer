@@ -8,28 +8,28 @@
     <script type="text/javascript" src="index.js" async></script>
 </head>
 <body>
-    <form>
-        <select id="categoriesSelectId" onchange ="onCategorySelected()">
+    <form method="POST" name="addTransacForm" id="addTransacFormId">
+        <select name="category" id="categoriesSelectId" onchange ="onCategorySelected()" form="addTransacFormId">
             <option value="" disabled selected>Select category</option>
             <option value="food">Food</option>
         </select>
-        <select  id="subCategoriesSelectId" onchange ="onSubCategorySelected()">
+        <select name="sub-category" id="subCategoriesSelectId" onchange ="onSubCategorySelected()" form="addTransacFormId">
             <option value="" disabled selected>Select sub category</option>
             <option value="vegetable">vegetable</option>
         </select>
-        <select  id="itemsSelectId" onchange ="onItemSelected()">
+        <select name="item" id="itemsSelectId" form="addTransacFormId">
             <option value="" disabled selected>Select item</option>
             <option value="appel">appel</option>
         </select>
-        <input type="number" name="amount" value=0>
-        <input type="date" name="date">
+        <input id="costInputId" type="number" name="cost" value=0>
+        <input id="dateInputId" type="date" name="date">
         <input type="submit" value="add">
     </form>
     <br>
     <form action="" method="" enctype="multipart/form-data">
         Select excel file to upload:
         <input type="file" name="fileToUpload" id="fileToUpload">
-        <input type="submit" value="Upload Image" name="submit">
+        <input type="submit" value="Upload" name="submit">
     </form>
     <br>
     <form>

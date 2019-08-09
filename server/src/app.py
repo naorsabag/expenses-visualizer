@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from esHandler import ESHandler
 import asyncio
 import os
@@ -34,14 +34,8 @@ def get_all_items(subCategory=None):
 
 @app.route('/add-transaction/', methods=['POST'])
 def add_transaction():
-	es.insert_dict(request.form)
-	return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
-
-
-@app.errorhandler(Exception)
-def all_exception_handler(error):
-   return 'Error', 500
-
+	res = es.insert_form_data(request.form)
+	return json.dumps({'success':True, 'data':res}), 200, {'ContentType':'application/json'}
 
 async def main():
 	await es.init()

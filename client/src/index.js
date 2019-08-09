@@ -12,6 +12,7 @@ var ADD_TRANSACTIONS_FROM_SHEET_URL = '/add-transactions-from-sheet/';
 var CATEGORIES_SELECT_ELM_ID = 'categoriesSelectId';
 var SUB_CATEGORIES_SELECT_ELM_ID = 'subCategoriesSelectId';
 var ITEM_SELECT_ELM_ID = 'itemsSelectId';
+var ADD_TRANSAC_FORM = 'addTransacFormId';
 
 var tid = setInterval( async () => {
   if ( document.readyState !== 'complete' ) return;
@@ -22,6 +23,8 @@ var tid = setInterval( async () => {
 async function main() {
   ping_backend();
 
+  addPostActionForAddTransacForm();
+
   var categories = await get_categories();
   show_categories(categories);
 }
@@ -30,6 +33,22 @@ function ping_backend() {
   return fetch_backend(PING_URL).then((data) => {
     console.log(data);
   });
+}
+
+function addPostActionForAddTransacForm() {
+  var formElm = document.getElementById(ADD_TRANSAC_FORM);
+  formElm.addEventListener('submit', getAddTransacFormListener(formElm));
+}
+
+function getAddTransacFormListener(formElm) {
+  return async (e) => {
+    e.preventDefault(); //to prevent form submission
+
+    var payload =new FormData(formElm);
+
+    var res = await fetch_backend(ADD_TRANSACTION_URL, payload);
+    console.log(res);
+  }
 }
 
 async function get_categories() {
@@ -67,9 +86,14 @@ function show_items(items) {
   show_data_in_select_element(items,ITEM_SELECT_ELM_ID);
 }
 
-async function onItemSelected() {
-  onSelect(ITEM_SELECT_ELM_ID, itemName => itemName, add_transaction);
-}
+// function add_transaction(item) {
+//   var transc = {category: currentCategory, sub_category: currentSubCategory, item: item, date: date, value: value};
+//   return fetch_backend(ADD_TRANSACTION_URL, {transac: transaction});
+// }
+
+// function show_transaction(transaction) {
+//   console.log(transaction);
+// }
 
 function show_data_in_select_element(data, selectElmId) {
   var selectElm = document.getElementById(selectElmId);
@@ -92,10 +116,6 @@ async function onSelect(selectElmId, digestSelectedVal , operate) {
 
   var items = await digestSelectedVal(selectedVal);
   operate(items);
-}
-
-function add_transaction(transaction) {
-  return fetch_backend(ADD_TRANSACTION_URL, {transac: transaction});
 }
 
 function add_item(item) {
@@ -126,11 +146,14 @@ async function fetch_backend(routing, payload) {
   var options = null;
 
   if(payload) {
-    var data = new FormData();
-    data.append( "json", JSON.stringify( payload ));
+    // var formData  = new FormData()
+    // for(pair of payload) {
+    //   formData.append(pair[0],pair[1]);
+    // }
+
     options = {
       method: "POST",
-      body: data
+      body: payload
     }
   }
 
