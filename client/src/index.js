@@ -5,14 +5,12 @@ var All_CATEGORIES_URL = '/get-all-categories/';
 var All_SUB_CATEGORIES_URL = '/get-all-sub-categories/';
 var ALL_ITEMS_URL = '/get-all-items/';
 var ADD_TRANSACTION_URL ='/add-transaction/';
-var ADD_CATEGORY_URL = '/add_category/';
-var ADD_SUB_CATEGORY_URL = '/add-sub-category/';
-var ADD_ITEM_URL = '/add-item/';
 var ADD_TRANSACTIONS_FROM_SHEET_URL = '/add-transactions-from-sheet/';
 var CATEGORIES_SELECT_ELM_ID = 'categoriesSelectId';
 var SUB_CATEGORIES_SELECT_ELM_ID = 'subCategoriesSelectId';
 var ITEM_SELECT_ELM_ID = 'itemsSelectId';
 var ADD_TRANSAC_FORM = 'addTransacFormId';
+var ADD_SHEET_FORM = 'addSheetFormId';
 
 var tid = setInterval( async () => {
   if ( document.readyState !== 'complete' ) return;
@@ -24,7 +22,8 @@ async function main() {
   ping_backend();
 
   addPostActionForAddTransacForm();
-
+  addPostActionForAddSheetForm();
+  
   var categories = await get_categories();
   show_categories(categories);
 }
@@ -37,16 +36,21 @@ function ping_backend() {
 
 function addPostActionForAddTransacForm() {
   var formElm = document.getElementById(ADD_TRANSAC_FORM);
-  formElm.addEventListener('submit', getAddTransacFormListener(formElm));
+  formElm.addEventListener('submit', getFormListener(formElm, ADD_TRANSACTION_URL));
 }
 
-function getAddTransacFormListener(formElm) {
+function addPostActionForAddSheetForm() {
+  var formElm = document.getElementById(ADD_SHEET_FORM);
+  formElm.addEventListener('submit', getFormListener(formElm, ADD_TRANSACTIONS_FROM_SHEET_URL));
+}
+
+function getFormListener(formElm, url){
   return async (e) => {
     e.preventDefault(); //to prevent form submission
 
-    var payload =new FormData(formElm);
+    var payload=new FormData(formElm);
 
-    var res = await fetch_backend(ADD_TRANSACTION_URL, payload);
+    var res = await fetch_backend(url, payload);
     console.log(res);
   }
 }
@@ -78,7 +82,8 @@ async function onSubCategorySelected() {
 }
 
 async function get_items(sub_category) {
-  var data = await fetch_backend('/'+sub_category+ALL_ITEMS_URL);
+  var category= document.getElementById(CATEGORIES_SELECT_ELM_ID).value;
+  var data = await fetch_backend('/'+category+'/'+sub_category+ALL_ITEMS_URL);
   return data.items;
 }
 

@@ -8,7 +8,7 @@
     <script type="text/javascript" src="index.js" async></script>
 </head>
 <body>
-    <form method="POST" name="addTransacForm" id="addTransacFormId">
+    <form name="addTransacForm" id="addTransacFormId">
         <select name="category" id="categoriesSelectId" onchange ="onCategorySelected()" form="addTransacFormId">
             <option value="" disabled selected>Select category</option>
             <option value="food">Food</option>
@@ -26,20 +26,10 @@
         <input type="submit" value="add">
     </form>
     <br>
-    <form action="" method="" enctype="multipart/form-data">
+    <form name="SheetForm" id="addSheetFormId" enctype="multipart/form-data">
         Select excel file to upload:
-        <input type="file" name="fileToUpload" id="fileToUpload">
+        <input type="file" name="file" id="fileToUpload">
         <input type="submit" value="Upload" name="submit">
-    </form>
-    <br>
-    <form>
-        <input type="text" name="category-name" value="category name">
-        <input type="submit" value="add category">
-    </form>
-    <br>
-    <form>
-        <input type="text" name="sub-category-name" value="sub category name">
-        <input type="submit" value="add sub category">
     </form>
 </body>
 </html>

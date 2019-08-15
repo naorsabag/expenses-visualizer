@@ -1,8 +1,19 @@
 version: '3'
 
 services:
- backend:
-  container_name: python-server
+ frontend-server:
+  container_name: frontend
+  build: ./client
+  image: nginx-client-server
+  ports:
+   - 8080:80
+  networks:
+   - esnet
+  depends_on:
+   - backend-server
+
+ backend-server:
+  container_name: backend
   build: ./server
   image: py-es-server
   environment:
@@ -12,7 +23,7 @@ services:
    - esnet
   depends_on:
    - db
-
+ 
  db: # Elasticsearch Instance
   container_name: elasticsearch
   image: docker.elastic.co/elasticsearch/elasticsearch:6.4.1
@@ -22,11 +33,9 @@ services:
    - bootstrap.memory_lock=true
    - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
    - discovery.type=single-node
-  ports: # Expose Elasticsearch ports
-   - "9200:9200"
   networks:
    - esnet
-
+ 
  stats:
   image: 'docker.elastic.co/kibana/kibana:6.4.1'
   container_name: kibana
