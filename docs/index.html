@@ -1,1 +1,35 @@
-hello world!
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>expenses-visualizer</title>
+    <script type="text/javascript" src="index.js" async></script>
+</head>
+<body>
+    <form name="addTransacForm" id="addTransacFormId">
+        <select name="category" id="categoriesSelectId" onchange ="onCategorySelected()" form="addTransacFormId">
+            <option value="" disabled selected>Select category</option>
+            <option value="food">Food</option>
+        </select>
+        <select name="sub-category" id="subCategoriesSelectId" onchange ="onSubCategorySelected()" form="addTransacFormId">
+            <option value="" disabled selected>Select sub category</option>
+            <option value="vegetable">vegetable</option>
+        </select>
+        <select name="item" id="itemsSelectId" form="addTransacFormId">
+            <option value="" disabled selected>Select item</option>
+            <option value="appel">appel</option>
+        </select>
+        <input id="costInputId" type="number" name="cost" value=0>
+        <input id="dateInputId" type="date" name="date">
+        <input type="submit" value="add">
+    </form>
+    <br>
+    <form name="SheetForm" id="addSheetFormId" enctype="multipart/form-data">
+        Select excel file to upload:
+        <input type="file" name="file" id="fileToUpload">
+        <input type="submit" value="Upload" name="submit">
+    </form>
+</body>
+</html>
