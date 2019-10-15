@@ -1,5 +1,5 @@
 var host = "35.240.81.194:80";
-var host_url = 'http://'+host+'/api';
+var host_url = 'https://'+host+'/api';
 var PING_URL = '/hello/';
 var All_CATEGORIES_URL = '/get-all-categories/';
 var All_SUB_CATEGORIES_URL = '/get-all-sub-categories/';
