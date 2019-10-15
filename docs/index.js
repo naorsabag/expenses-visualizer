@@ -1,4 +1,4 @@
-var host = "35.240.81.194:80";
+var host = "35.240.81.194";
 var host_url = 'https://'+host+'/api';
 var PING_URL = '/hello/';
 var All_CATEGORIES_URL = '/get-all-categories/';
